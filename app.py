@@ -1,4 +1,4 @@
-
+from sklearn.pipeline import Pipeline
 import streamlit as st
 import numpy as np
 import pandas as pd
