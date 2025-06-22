@@ -82,7 +82,7 @@ streamlit run app.py
 
 ## 📷 Preview
 
-> *(Insert screenshot of the app UI here if you'd like)*
+> *(![alt text](image-1.png))*
 
 ---
 
