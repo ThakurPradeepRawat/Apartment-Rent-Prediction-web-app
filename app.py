@@ -5,112 +5,124 @@ import pandas as pd
 import pickle
 
 # Load model
-with open("random_forest_regressor_model.pkl", "rb") as f:
-    model = pickle.load(f)
+try:
+    with open("random_forest_regressor_model.pkl", "rb") as f:
+        model = pickle.load(f)
+except FileNotFoundError:
+    st.error("🚫 Model file not found. Please ensure the model is present.")
+    st.stop()
 
 # Page config
-st.set_page_config(page_title="House Rent Predictor", layout="wide")
+st.set_page_config(page_title="Rent Predictor", layout="wide")
 
-# Inject custom CSS
+# Custom CSS
 st.markdown("""
     <style>
-    body {
-        background-color: #121212;
-        color: white;
-        font-family: 'Arial', sans-serif;
+    html, body, [class*="css"]  {
+        font-family: 'Segoe UI', sans-serif;
+        background-color: #f4f6f9;
+        color: #333;
     }
 
-       .title {
-        color: white;
-        font-size: 36px;
+    .main-title {
+        font-size: 42px;
+        font-weight: 700;
         text-align: center;
-        font-weight: bold;
-        margin-bottom: 10px;
+        margin-top: 20px;
+        color: #333333;
     }
 
     .subtitle {
-        color: #cccccc;
         font-size: 18px;
         text-align: center;
+        color: #555555;
         margin-bottom: 40px;
     }
 
-    .stSlider label, .stSelectbox label, .stButton button {
-        font-size: 18px !important;
-        color: white !important;
-    }
-
-    .stSelectbox div[role="combobox"] {
-        font-size: 18px;
-    }
-
-    .stSlider .st-b6 {
-        font-size: 16px !important;
-    }
-
-    .stButton button {
-        background-color: #00cc99;
-        color: black;
-        padding: 10px 24px;
+    .stButton>button {
+        background-color: #009688;
+        color: white;
+        padding: 0.75em 2em;
         border-radius: 8px;
         font-size: 18px;
-        align-items: center;
-        justify-content: center;
-        margin-left: 50%;
-        transform: translateX(-50%);
+        border: none;
+        margin-top: 30px;
+        width: 100%;
+        transition: background-color 0.3s ease;
+    }
+
+    .stButton>button:hover {
+        background-color: #00796b;
+    }
+
+    .rent-box {
+        background-color: #e0f2f1;
+        padding: 30px;
+        border-radius: 10px;
+        text-align: center;
+        margin-top: 30px;
+        color: #004d40;
+        font-size: 26px;
+        font-weight: bold;
+    }
+
+    footer {
+        text-align: center;
+        font-size: 14px;
+        color: #999999;
+        padding-top: 40px;
+        margin-top: 60px;
+    }
+
+    @media only screen and (max-width: 768px) {
+        .stButton>button {
+            font-size: 16px;
+        }
     }
     </style>
 """, unsafe_allow_html=True)
 
-# Main black container
+# Header
+st.markdown("<div class='main-title'>🏡 Apartment  Rent Predictor</div>", unsafe_allow_html=True)
+st.markdown("<div class='subtitle'>Fill in property details to estimate the monthly rent</div>", unsafe_allow_html=True)
 
+# Input layout
 with st.container():
-   
-
-    st.markdown('<div class="title">🏠 House Rent Predictor</div>', unsafe_allow_html=True)
-    st.markdown('<div class="subtitle">Enter house details below to get the estimated monthly rent</div>', unsafe_allow_html=True)
-
-    # Input Section
     col1, col2 = st.columns(2)
 
     with col1:
         bhk = st.slider('BHK (Bedrooms)', 1, 6, 3)
         bath = st.slider('Bathrooms', 1, 7, 2)
-        rent = st.slider('Rental Floor', -2, 22, 0)
-        total_f = st.slider('Total Floors in Building', 0, 30, 10)
-        fixed_s = st.slider("Total Area (Sqft)", 10, 3100, 850, step=10)
+        rent_floor = st.slider('Rental Floor', -2, 22, 0)
+        total_floors = st.slider('Total Floors in Building', 1, 30, 10)
+        fixed_size = st.slider("Total Area (Sqft)", 100, 3100, 850, step=50)
 
     with col2:
-        square_feet_rent = st.slider("Per Sqft Rent (₹)", 10, 120, 35, step=2)
+        sqft_rent = st.slider("Per Sqft Rent (₹)", 10, 120, 35, step=5)
         city = st.selectbox('City', ['Kolkata', 'Mumbai', 'Bangalore', 'Delhi', 'Chennai', 'Hyderabad'])
-        furn_s = st.selectbox('Furnishing Status', ['Unfurnished', 'Semi-Furnished', 'Furnished'])
+        furnish = st.selectbox('Furnishing Status', ['Unfurnished', 'Semi-Furnished', 'Furnished'])
         tenant = st.selectbox('Tenant Preference', ['Bachelors/Family', 'Bachelors', 'Family'])
-        point_c = st.selectbox('Point of Contact', ['Contact Owner', 'Contact Agent'])
+        contact = st.selectbox('Point of Contact', ['Contact Owner', 'Contact Agent'])
 
-    new_data = pd.DataFrame([[bhk, city, furn_s, tenant, bath, point_c, rent, total_f, fixed_s, square_feet_rent]],
-        columns=[
-            'BHK', 'City', 'Furnishing Status', 'Tenant Preferred',
-            'Bathroom', 'Point of Contact', 'Rental Floor',
-            'Total Number of Floor', 'Fixed Size', "Square Feet Rent"
-        ]
-    )
+# Validation
+if rent_floor > total_floors:
+    st.warning("⚠️ Rental floor cannot be greater than total floors.")
+    st.stop()
 
-    if st.button('Predict Rent'):
-        prediction = model.predict(new_data)
-        predicted_rent = np.round(prediction[0], 2)
-        st.markdown(f"""
-          <div style='
-        background-color: #00cc99;
-        padding: 20px;
-        border-radius: 10px;
-        text-align: center;
-        color: black;
-        font-size: 24px;
-        font-weight: bold;
-        margin-top: 30px;
-    '>
-        💰 Estimated Monthly Rent: ₹ {predicted_rent}
-    </div> """, unsafe_allow_html=True)
-        
+# Prepare input
+input_data = pd.DataFrame([[
+    bhk, city, furnish, tenant, bath, contact,
+    rent_floor, total_floors, fixed_size, sqft_rent
+]], columns=[
+    'BHK', 'City', 'Furnishing Status', 'Tenant Preferred', 'Bathroom',
+    'Point of Contact', 'Rental Floor', 'Total Number of Floor', 'Fixed Size', 'Square Feet Rent'
+])
 
+# Predict
+if st.button("🔍 Predict Rent"):
+    prediction = model.predict(input_data)
+    rent = np.round(prediction[0], 2)
+    st.markdown(f"<div class='rent-box'>💰 Estimated Monthly Rent: ₹ {rent}</div>", unsafe_allow_html=True)
 
+# Footer
+st.markdown("<footer>Made with ❤️ by Pradeep Rawat</footer>", unsafe_allow_html=True)

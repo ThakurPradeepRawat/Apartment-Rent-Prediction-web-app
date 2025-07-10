@@ -1,13 +1,8 @@
 
-# 🏡 House Rent Prediction Web App
+# 🏡 Apartment Rent Prediction Web App
 
-A web-based **House Rent Predictor** built using **Streamlit**, which estimates the monthly rent of a property based on input features such as BHK, city, furnishing status, and more. The model is powered by a **Random Forest Regressor**, trained on a cleaned dataset of house rentals.
+A web-based **Apartment Rent Predictor** built using **Streamlit**, which estimates the monthly rent of a property based on input features such as BHK, city, furnishing status, and more. The model is powered by a **Random Forest Regressor**, trained on a cleaned dataset of house rentals.
 
----
-
-## 🚀 Demo
-
-> 💡 *This app runs locally via Streamlit. Deployment instructions are included below.*
 
 ---
 
@@ -54,8 +49,8 @@ A web-based **House Rent Predictor** built using **Streamlit**, which estimates 
 1. **Clone the repo:**
 
 ```bash
-git clone https://github.com/thakur pradeep rawat/house-rent-predictor.git
-cd house-rent-predictor
+git clone https://github.com/thakur pradeep rawat/apartment-rent-predictor.git
+cd apartment-rent-predictor
 ```
 
 2. **Create and activate a virtual environment (recommended):**
@@ -82,7 +77,7 @@ streamlit run app.py
 
 ## 📷 Preview
 
-> *(![alt text](image-1.png))*
+> *(![alt text](Image1.png))*
 
 ---
 
